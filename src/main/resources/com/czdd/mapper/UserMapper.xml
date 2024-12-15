@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czdd.mapper.UserMapper">
+    <delete id="deleteById">
+        delete from users where id = #{id}
+    </delete>
+    <select id="list" resultType="com.czdd.pojo.User">
+        select id, name, email, age from users
+    </select>
+    <insert id="insert">
+        insert into users(name, email, age) values (#{name}, #{email}, #{age})
+    </insert>
+    <select id="getUserById" resultType="com.czdd.pojo.User">
+        select id, name, email, age from users where id = #{id}
+    </select>
+    <select id="count" resultType="java.lang.Long">
+        select count(*) from users
+    </select>
+    <select id="page" resultType="com.czdd.pojo.User">
+        select id, name, email, age from users limit #{pageStart}, #{pageSize}
+    </select>
+    <update id="update">
+        update users set name = #{user.name}, email = #{user.email}, age = #{user.age} where id = #{id}
+    </update>
+</mapper>

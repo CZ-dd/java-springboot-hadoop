@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分页展示</title>
+</head>
+<script src="https://cdn.staticfile.net/jquery/1.10.2/jquery.min.js">
+</script>
+
+<body>
+<div class="content">
+    <button id="getStudents">getStudents</button>
+    <div>
+        <form id="Delete" action="users/" method="post">
+            <input type="text" name="deleteId" id="deleteId" placeholder="输入要删除学生的id">
+            <div>
+                <input type="button" class="Delete" value="删除">
+            </div>
+        </form>
+    </div>
+    <div>
+        <form id="Create" action="users" method="post">
+            <input type="text" name="createStuname" id="createStuname" placeholder="输入要新增学生的姓名">
+            <input type="text" name="createEmail" id="createEmail" placeholder="输入要新增学生的邮箱">
+            <input type="text" name="createAge" id="createAge" placeholder="输入要新增学生的年龄">
+            <div>
+                <input type="button" class="Create" value="新增">
+            </div>
+        </form>
+    </div>
+    <div>
+        <form id="Update" action="users/update/" method="post">
+            <input type="text" name="updateId" id="updateId" placeholder="输入要更新学生的id">
+            <input type="text" name="updateStuname" id="updateStuname" placeholder="输入要更新学生的姓名">
+            <input type="text" name="updateEmail" id="updateEmail" placeholder="输入要更新学生的邮箱">
+            <input type="text" name="updateAge" id="updateAge" placeholder="输入要更新学生的年龄">
+            <div>
+                <input type="button" class="Update" value="更新">
+            </div>
+        </form>
+    </div>
+    <div id="readDiv">
+        <form id="Read" action="users/read/" method="get">
+            <input type="text" name="readId" id="readId" placeholder="输入要查找学生的id">
+            <div>
+                <input type="button" class="Read" value="查找">
+            </div>
+        </form>
+        查找结果:
+    </div>
+    <table class="table">
+
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                姓名
+            </th>
+            <th>
+                邮箱
+            </th>
+            <th>
+                年龄
+            </th>
+
+        </tr>
+
+        <tbody id="tabletext"><!-- 在此处加载表格内容 -->
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    $(document).ready(function () {
+        $("#getStudents").click(function getStudents() {
+            $.get("/users/getStudents", function (data, status) {
+                // alert("状态:"+status);
+                // display(JSON.stringify(data));
+                const userdata = data.data.rows;
+                var dataStr = "";
+                for (var i = 0; i < data.data.total; i++) {
+                    dataStr += "<tr><td>" + userdata[i].id +
+                        "</td><td>" + userdata[i].name +
+                        "</td><td>" + userdata[i].email +
+                        "</td><td>" + userdata[i].age + "</td></tr>";
+                }
+                $("#tabletext").html(dataStr);
+            });
+        });
+    });
+
+    function display(data) {
+        data = String(data);
+        data = "<p>" + data + "</p>"
+        $(".content").append(data);
+    }
+
+    $(document).ready(function () {
+        $(".Delete").click(function () {
+            var studentid = $("input[name=deleteId]").val();
+            if (studentid == '') {
+                alert("id不能为空");
+            } else {
+                $.post("/users/delete/" + studentid, function (data, status) {
+                    // alert("状态:"+status);
+                    // display(JSON.stringify(data));
+                    $("#getStudents").click();
+                    $("#deleteId").val("");
+                });
+            }
+
+        });
+    });
+    $(document).ready(function () {
+        $(".Create").click(function () {
+            var studentname = $("input[name=createStuname]").val();
+            var studentemail = $("input[name=createEmail]").val();
+            var studentage = Number($("input[name=createAge]").val());
+            //  display(typeof studentname);
+            //  display(typeof studentemail);
+            //  display(typeof studentage);
+            // var test={"name":studentname,"email":studentemail,"age":studentage};
+            // display(test);
+            // test=JSON.stringify(test);
+            // display(test);
+            if (studentname == '') {
+                alert("姓名不能为空");
+            } else if (studentemail == '') {
+                alert("邮箱不能为空");
+            } else if (studentage == '') {
+                alert("年龄不能为空");
+            } else {
+                $.post("/users/create", {
+                    "name": studentname,
+                    "email": studentemail,
+                    "age": studentage
+                }, function (data, status) {
+                    // alert("状态:"+status);
+                    // display(JSON.stringify(data));
+                    $("#getStudents").click();
+                    $("#createStuname").val("");
+                    $("#createEmail").val("");
+                    $("#createAge").val("");
+                });
+            }
+
+        });
+    });
+    $(document).ready(function () {
+        $(".Update").click(function () {
+            var id = $("input[name=updateId]").val();
+            var studentname = $("input[name=updateStuname]").val();
+            var studentemail = $("input[name=updateEmail]").val();
+            var studentage = Number($("input[name=updateAge]").val());
+            // display(typeof studentname);
+            // display(typeof studentemail);
+            // display(typeof studentage);
+            // var test = {"id": id, "name": studentname, "email": studentemail, "age": studentage};
+            // display(test);
+            // test = JSON.stringify(test);
+            // display(test);
+            if (id == '') {
+                alert("id不能为空");
+            } else if (studentname == '') {
+                alert("姓名不能为空");
+            } else if (studentemail == '') {
+                alert("邮箱不能为空");
+            } else if (studentage == '') {
+                alert("年龄不能为空");
+            } else {
+                $.post("/users/update/" + id, {
+                    "name": studentname,
+                    "email": studentemail,
+                    "age": studentage
+                }, function (data, status) {
+                    // alert("状态:" + status);
+                    // display(JSON.stringify(data));
+                    $("#getStudents").click();
+                    $("#updateId").val("");
+                    $("#updateStuname").val("");
+                    $("#updateEmail").val("");
+                    $("#updateAge").val("");
+                });
+            }
+
+        });
+    });
+    $(document).ready(function () {
+        $(".Read").click(function () {
+            var id = $("input[name=readId]").val();
+            // display(id);
+            if (id == '') {
+                alert("id不能为空");
+            } else {
+                alert(id);
+                $.get("/users/read/" + id,
+                    function (data, status) {
+                        // alert("状态:" + status);
+                        // display(JSON.stringify(data));
+                        const userdata = data.data;
+                        var dataStr = "<tr><td>id: " + userdata.id +
+                            " </td><td>姓名: " + userdata.name +
+                            " </td><td>邮箱: " + userdata.email +
+                            " </td><td>年龄: " + userdata.age + "</td></tr>";
+                        $("#readDiv").append(dataStr);
+                        $("#readId").val("");
+                    });
+            }
+
+        });
+    });
+</script>
+
+</html>
