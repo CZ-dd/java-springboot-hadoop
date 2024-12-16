@@ -2,14 +2,8 @@ package com.czdd.controller;
 
 import com.czdd.hadoop.HadoopTemplate;
 import com.czdd.pojo.Result;
-import com.czdd.pojo.SimpleFile;
-import com.czdd.service.HadoopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.xbill.DNS.dnssec.R;
-
-import javax.ws.rs.GET;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/hdfs")
@@ -48,6 +42,11 @@ public class HadoopController {
     public Result download(@RequestParam String fileName, @RequestParam String savePath){
         hadoopTemplate.download(fileName, savePath);
         return Result.success("download");
+    }
+
+    @GetMapping("/mapreduce")
+    public Result mr(@RequestParam String inPath, @RequestParam String outPath){
+        return Result.success(hadoopTemplate.mapreduce(inPath, outPath));
     }
 
 }

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 @Component
 @ConditionalOnBean(FileSystem.class)
@@ -161,5 +163,72 @@ public class HadoopTemplate {
         } catch (IOException e) {
             log.error("", e);
         }
+    }
+    /*
+     * @description:执行mapreduce任务
+     * @param inPath
+     * @param outPath
+            * @return: java.lang.String
+            * @author: Cz_13
+            * @time: 2024/12/16 12:58
+     */
+    public String mapreduce(String inPath, String outPath){
+        ProcessBuilder processBuilder = new ProcessBuilder("hadoop", "jar", "/export/jar/mr03.jar", "hadoop.mapreduce.WordCountDriver", inPath, outPath);
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                return "MapReduce job completed successfully: " + stringBuilder.toString();
+            } else {
+                return "Error1: " + stringBuilder.toString();
+            }
+
+        } catch (IOException | InterruptedException e) {
+            log.error("", e);
+            return "Error2: " + e.getMessage();
+        }
+
+        /*Configuration configuration = new Configuration();
+        // configuration.set("fs.defaultFS", nameNode);
+        configuration.set("fs.defaultFS", "hdfs://node1:8020");
+        Job job = Job.getInstance(configuration, "MyWordCount");
+        *//*String[] otherArgs = new GenericOptionsParser(configuration, args).getRemainingArgs();   // 其他参数inPath 和 outPath
+        if(otherArgs.length < 2){
+            System.err.println("usage: hadoop jar WordCount.jar hadoop.mapreduce.WordCountDriver <in> <out>");
+            System.exit(2);
+        } else {
+            for (int i = 0; i < otherArgs.length - 1; i++) {
+                if(!("hadoop.mapreduce.WordCountDriver".equalsIgnoreCase(otherArgs[i]))){
+                    FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
+                    // System.out.println("参数in: " + otherArgs[i]);
+                }
+            }
+            FileOutputFormat.setOutputPath(job, new Path(otherArgs[otherArgs.length - 1]));
+        }*//*
+        String inPath = "hdfs://node1:8020/input/test1.txt";
+        String outPath = "hdfs://node1:8020/output/test2/";
+        // FileSystem fs = FileSystem.get(URI.create("hdfs://node1:8020"), configuration, "hadoop");
+        if(fileSystem.exists(new Path(outPath))){
+            // 存在的话删除
+            fileSystem.delete(new Path(outPath), true);
+        }
+
+        job.setJarByClass(HadoopTemplate.class);
+        // job.setJarByClass(WordCountDriver.class);
+        job.setMapperClass(WordCountMapper.class);
+        job.setCombinerClass(WordCountReducer.class);
+        job.setReducerClass(WordCountReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+        FileInputFormat.addInputPath(job, new Path(inPath));
+        FileOutputFormat.setOutputPath(job, new Path(outPath));
+        System.exit((job.waitForCompletion(true) ? 0 : 1));*/
     }
 }

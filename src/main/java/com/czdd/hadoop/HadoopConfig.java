@@ -31,6 +31,5 @@ public class HadoopConfig {
         }
         System.out.println("fs.defaultFS: " + configuration.get("fs.defaultFS"));
         return fileSystem;
-
     }
 }
